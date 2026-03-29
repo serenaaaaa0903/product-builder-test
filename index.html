@@ -25,7 +25,6 @@
             color: var(--text);
         }
 
-        /* 헤더 디자인 - 모바일 가독성 최적화 */
         header {
             background-color: var(--primary);
             color: white;
@@ -63,7 +62,6 @@
             padding: 20px; 
         }
 
-        /* [카드 공통 스타일] */
         .glass-card {
             background: var(--white);
             padding: 25px;
@@ -72,7 +70,6 @@
             margin-bottom: 20px;
         }
 
-        /* [섹션 1: 설정 화면] */
         .form-group { margin-bottom: 18px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 1rem; color: #444; }
         input, textarea, select { 
@@ -110,7 +107,6 @@
             text-align: center; 
         }
 
-        /* [섹션 2: 교육 화면] */
         #edu-section { display: none; }
         .progress-bar { height: 16px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 15px 0; }
         #progress-fill { height: 100%; width: 0%; background: var(--primary); transition: width 0.5s ease; }
@@ -156,13 +152,11 @@
             box-shadow: 0 8px 15px rgba(181, 148, 16, 0.3);
         }
 
-        /* [PDF 수료증 템플릿 - 숨김 영역] */
         #cert-template {
             display: none; width: 700px; padding: 50px; border: 15px double var(--accent); background: white;
             text-align: center; position: fixed; left: -9999px; top: 0;
         }
 
-        /* 모바일용 미디어 쿼리 */
         @media (max-width: 480px) {
             header h1 { font-size: 1.5rem; }
             .container { padding: 15px; }
@@ -208,7 +202,7 @@
 
         <div id="link-display">
             <p id="link-ready-txt" style="font-weight:bold; color:var(--primary); margin-bottom:15px;">링크가 준비되었습니다!</p>
-            <button id="btn-copy" class="btn-main" style="background:#fee500; color:#3c1e1e;" onclick="copyLink()">카톡 전송용 링크 복사</button>
+            <button id="btn-copy" class="btn-main" style="background:#fee500; color:#3c1e1e;" onclick="copyLink()">링크 복사하기</button>
             <p id="final-url" style="font-size:0.75rem; color:#999; word-break:break-all; margin-top:15px;"></p>
         </div>
     </section>
@@ -327,7 +321,7 @@
             btnEduDone: "Review Again"
         },
         ja: {
-            headerTitle: "🛡️ 我が家の安全保安官",
+            headerTitle: "🛡️ 我が가의 安全保安官",
             headerSub: "家族の愛がこもった予防教育",
             setupTitle: "1. 送り先のカスタム設定",
             labelTarget: "誰に送りますか？",
@@ -339,8 +333,8 @@
             labelMsg: "心を込めたメッセージ",
             placeholderMsg: "例：お母さん、これを見て詐欺に気をつけてね！",
             btnGenerate: "教育リンクを作成",
-            linkReady: "リンクの準備ができました！",
-            btnCopy: "リンクをコピー",
+            linkReady: "링크의 준비가되었습니다!",
+            btnCopy: "링크를 복사",
             welcome: "ようこそ！",
             relationParent: "家族が準備した安全教育です。",
             relationChild: "親が君のために準備した安全ミッションだよ！",
@@ -348,7 +342,7 @@
             progressLabel: "進捗",
             btnIssue: "🏆 修了証をPDFで保存",
             alertInput: "お名前とメッセージを入力してください。",
-            alertCopy: "リンクがコピーされました。",
+            alertCopy: "링크가 복사되었습니다.",
             alertCertSuccess: "修了証が正常に発行されました！",
             alertCertError: "PDF作成中に問題が発生しました。",
             certTitle: "修 了 証",
@@ -360,7 +354,7 @@
             eduTitles: [
                 "「ロマンス詐欺」の実際の事例と対策",
                 "検察・金融機関を騙る電話への対処法",
-                "「画面が割れた」という家族を騙るメールへの対応",
+                "「画面가割れた」という家族を騙るメールへの対応",
                 "政府支援金の案内メールは100％詐欺です",
                 "声までそっくりなAIディープフェイク詐欺の見分け方"
             ],
@@ -387,6 +381,8 @@
 
     function updateUI() {
         const t = i18n[currentLang];
+        if(!t) return;
+        
         document.getElementById('header-title').innerText = t.headerTitle;
         document.getElementById('header-sub').innerText = t.headerSub;
         document.getElementById('setup-title').innerText = t.setupTitle;
@@ -409,8 +405,9 @@
         document.getElementById('pdf-footer').innerText = t.certFooter;
 
         const params = new URLSearchParams(window.location.search);
-        if(params.get('name')) {
-            document.getElementById('welcome-txt').innerText = `${params.get('name')} ${currentLang === 'ko' ? '보안관님!' : currentLang === 'ja' ? '保安官様！' : 'Sheriff!'}`;
+        const name = params.get('name');
+        if(name) {
+            document.getElementById('welcome-txt').innerText = `${name} ${currentLang === 'ko' ? '보안관님!' : currentLang === 'ja' ? '保安官様！' : 'Sheriff!'}`;
             let relation = t.relationParent;
             const target = params.get('target');
             if(target === 'child') relation = t.relationChild;
@@ -447,21 +444,24 @@
     function init() {
         const params = new URLSearchParams(window.location.search);
         const lang = params.get('lang') || 'ko';
-        document.getElementById('lang-select').value = lang;
-        changeLang(lang);
-
         const name = params.get('name');
         const msg = params.get('msg');
+
+        document.getElementById('lang-select').value = lang;
+        changeLang(lang);
 
         if(name && msg) {
             document.getElementById('setup-section').style.display = 'none';
             document.getElementById('edu-section').style.display = 'block';
-            updateUI();
+        } else {
+            document.getElementById('setup-section').style.display = 'block';
+            document.getElementById('edu-section').style.display = 'none';
         }
     }
 
     function renderEduList() {
         const list = document.getElementById('edu-list');
+        if(!list) return;
         list.innerHTML = '';
         const t = i18n[currentLang];
         educationData.forEach((item, index) => {
@@ -489,9 +489,14 @@
         let count = 0;
         educationData.forEach(item => { if(localStorage.getItem(`edu_done_${item.id}`)) count++; });
         const percent = (count / educationData.length) * 100;
-        document.getElementById('progress-fill').style.width = percent + '%';
-        document.getElementById('status-txt').innerText = `${i18n[currentLang].progressLabel}: ${count} / 5`;
-        if(count >= 5) document.getElementById('issue-btn').style.display = 'block';
+        const fill = document.getElementById('progress-fill');
+        const txt = document.getElementById('status-txt');
+        if(fill) fill.style.width = percent + '%';
+        if(txt) txt.innerText = `${i18n[currentLang].progressLabel}: ${count} / 5`;
+        if(count >= 5) {
+            const btn = document.getElementById('issue-btn');
+            if(btn) btn.style.display = 'block';
+        }
     }
 
     async function issueCertificate() {
@@ -500,10 +505,13 @@
         const msg = params.get('msg');
         const t = i18n[currentLang];
 
-        document.getElementById('pdf-name').innerText = name;
-        document.getElementById('pdf-msg').innerText = msg;
+        const pdfName = document.getElementById('pdf-name');
+        const pdfMsg = document.getElementById('pdf-msg');
+        if(pdfName) pdfName.innerText = name;
+        if(pdfMsg) pdfMsg.innerText = msg;
 
         const template = document.getElementById('cert-template');
+        if(!template) return;
         template.style.display = 'block';
 
         try {
