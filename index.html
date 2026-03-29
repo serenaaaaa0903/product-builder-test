@@ -34,10 +34,27 @@
             border-bottom-left-radius: 25px;
             border-bottom-right-radius: 25px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
         }
 
         header h1 { font-size: 1.8rem; margin: 0; word-break: keep-all; }
         header p { font-size: 1rem; opacity: 0.9; margin: 10px 0 0; }
+
+        .lang-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .lang-selector select {
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            font-size: 0.8rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+        }
+        .lang-selector select option { color: black; }
 
         .container { 
             width: 100%; 
@@ -157,34 +174,41 @@
 <body>
 
 <header>
+    <div class="lang-selector">
+        <select id="lang-select" onchange="changeLang(this.value)">
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+        </select>
+    </div>
     <h1 id="header-title">🛡️ 우리집 안전 보안관</h1>
     <p id="header-sub">가족의 사랑이 담긴 예방 교육</p>
 </header>
 
 <div class="container">
     <section id="setup-section" class="glass-card">
-        <h3 style="margin-top:0;">1. 받는 분 맞춤 설정</h3>
+        <h3 id="setup-title" style="margin-top:0;">1. 받는 분 맞춤 설정</h3>
         <div class="form-group">
-            <label>어떤 분에게 보낼까요?</label>
+            <label id="label-target">어떤 분에게 보낼까요?</label>
             <select id="target_type">
-                <option value="parent">부모님 (효도 보안관)</option>
-                <option value="child">자녀 (청년 보안관)</option>
-                <option value="spouse">배우자 (수호 보안관)</option>
+                <option value="parent" id="opt-parent">부모님 (효도 보안관)</option>
+                <option value="child" id="opt-child">자녀 (청년 보안관)</option>
+                <option value="spouse" id="opt-spouse">배우자 (수호 보안관)</option>
             </select>
         </div>
         <div class="form-group">
-            <label>받는 분 성함</label>
+            <label id="label-name">받는 분 성함</label>
             <input type="text" id="p_name" placeholder="예: 김순자">
         </div>
         <div class="form-group">
-            <label>마음을 전하는 한마디</label>
+            <label id="label-msg">마음을 전하는 한마디</label>
             <textarea id="p_msg" rows="3" placeholder="예: 엄마, 이거 보시고 사기 걱정 없이 행복하게 살자!"></textarea>
         </div>
-        <button class="btn-main" onclick="generateEduLink()">교육 링크 만들기</button>
+        <button id="btn-generate" class="btn-main" onclick="generateEduLink()">교육 링크 만들기</button>
 
         <div id="link-display">
-            <p style="font-weight:bold; color:var(--primary); margin-bottom:15px;">링크가 준비되었습니다!</p>
-            <button class="btn-main" style="background:#fee500; color:#3c1e1e;" onclick="copyLink()">카톡 전송용 링크 복사</button>
+            <p id="link-ready-txt" style="font-weight:bold; color:var(--primary); margin-bottom:15px;">링크가 준비되었습니다!</p>
+            <button id="btn-copy" class="btn-main" style="background:#fee500; color:#3c1e1e;" onclick="copyLink()">카톡 전송용 링크 복사</button>
             <p id="final-url" style="font-size:0.75rem; color:#999; word-break:break-all; margin-top:15px;"></p>
         </div>
     </section>
@@ -204,8 +228,8 @@
 </div>
 
 <div id="cert-template">
-    <div id="cert-title" style="font-size: 3.5rem; color: #b59410; font-weight: bold; margin-bottom: 20px;">수 료 증</div>
-    <div style="font-size: 2.2rem; font-weight: bold; margin-bottom: 30px;">성명: <span id="pdf-name"></span></div>
+    <div id="cert-title-pdf" style="font-size: 3.5rem; color: #b59410; font-weight: bold; margin-bottom: 20px;">수 료 증</div>
+    <div style="font-size: 2.2rem; font-weight: bold; margin-bottom: 30px;"><span id="label-pdf-name">성명</span>: <span id="pdf-name"></span></div>
     <div id="cert-body" style="font-size: 1.4rem; line-height: 1.8; margin-bottom: 40px; word-break: keep-all; padding: 0 30px;">
         위 보안관님은 가족이 정성껏 준비한 '우리집 안전 교육' 과정을 성실히 이수하여 각종 사기 범죄로부터 가족의 행복을 지킬 지혜를 갖추었으므로 이 증서를 수여합니다.
     </div>
@@ -213,29 +237,197 @@
         " <span id="pdf-msg"></span> "
     </div>
     <div style="margin-top: 50px; font-size: 1.2rem; color: #888;">
-        발급일: 2026년 3월 28일<br><br>
-        <b style="font-size: 1.8rem; color: #333;">우리집 안전 보안관 본부</b>
+        <span id="label-pdf-date">발급일</span>: 2026년 3월 29일<br><br>
+        <b id="pdf-footer" style="font-size: 1.8rem; color: #333;">우리집 안전 보안관 본부</b>
     </div>
 </div>
 
 <script>
-    // 2026년 최신 데이터 반영
+    const i18n = {
+        ko: {
+            headerTitle: "🛡️ 우리집 안전 보안관",
+            headerSub: "가족의 사랑이 담긴 예방 교육",
+            setupTitle: "1. 받는 분 맞춤 설정",
+            labelTarget: "어떤 분에게 보낼까요?",
+            optParent: "부모님 (효도 보안관)",
+            optChild: "자녀 (청년 보안관)",
+            optSpouse: "배우자 (수호 보안관)",
+            labelName: "받는 분 성함",
+            placeholderName: "예: 김순자",
+            labelMsg: "마음을 전하는 한마디",
+            placeholderMsg: "예: 엄마, 이거 보시고 사기 걱정 없이 행복하게 살자!",
+            btnGenerate: "교육 링크 만들기",
+            linkReady: "링크가 준비되었습니다!",
+            btnCopy: "링크 복사하기",
+            welcome: "환영합니다!",
+            relationParent: "가족이 준비한 안전 교육입니다.",
+            relationChild: "부모님이 너를 위해 준비한 안전 임무야!",
+            relationSpouse: "우리 가족의 행복을 위해 함께 배워봐요.",
+            progressLabel: "진행도",
+            btnIssue: "🏆 수료증 PDF 저장하기",
+            alertInput: "성함과 메시지를 입력해 주세요.",
+            alertCopy: "링크가 복사되었습니다.",
+            alertCertSuccess: "수료증이 성공적으로 발급되었습니다!",
+            alertCertError: "PDF 생성 중 문제가 발생했습니다.",
+            certTitle: "수 료 증",
+            certLabelName: "성명",
+            certBody: "위 보안관님은 가족이 정성껏 준비한 '우리집 안전 교육' 과정을 성실히 이수하여 각종 사기 범죄로부터 가족의 행복을 지킬 지혜를 갖추었으므로 이 증서를 수여합니다.",
+            certDate: "발급일",
+            certFooter: "우리집 안전 보안관 본부",
+            eduTags: ["로맨스 사기", "보이스피싱", "스미싱", "정책 사기", "AI 범죄"],
+            eduTitles: [
+                "가짜 사랑으로 돈을 요구하는 '로맨스 스캠' 실제 사례",
+                "검찰·금융기관 사칭 전화를 받았을 때 대처법",
+                "가족 사칭 '휴대폰 액정 깨졌다' 문자 대응 요령",
+                "정부 지원금 문자는 100% 사기입니다 (클릭 금지)",
+                "목소리까지 똑같은 AI 딥페이크 사기 구별법"
+            ],
+            btnEduStart: "교육 내용 확인",
+            btnEduDone: "다시 공부하기"
+        },
+        en: {
+            headerTitle: "🛡️ Family Safety Sheriff",
+            headerSub: "Prevention Education with Family Love",
+            setupTitle: "1. Custom Settings for Recipient",
+            labelTarget: "Who are you sending this to?",
+            optParent: "Parents (Filial Sheriff)",
+            optChild: "Children (Youth Sheriff)",
+            optSpouse: "Spouse (Guardian Sheriff)",
+            labelName: "Recipient's Name",
+            placeholderName: "e.g., Jane Doe",
+            labelMsg: "A Message from the Heart",
+            placeholderMsg: "e.g., Mom, please watch this and stay safe from scams!",
+            btnGenerate: "Create Education Link",
+            linkReady: "Link is ready!",
+            btnCopy: "Copy Link",
+            welcome: "Welcome!",
+            relationParent: "This is a safety education prepared by your family.",
+            relationChild: "This is a safety mission prepared by your parents!",
+            relationSpouse: "Let's learn together for our family's happiness.",
+            progressLabel: "Progress",
+            btnIssue: "🏆 Save Certificate as PDF",
+            alertInput: "Please enter a name and message.",
+            alertCopy: "Link copied to clipboard.",
+            alertCertSuccess: "Certificate issued successfully!",
+            alertCertError: "There was a problem generating the PDF.",
+            certTitle: "CERTIFICATE",
+            certLabelName: "Name",
+            certBody: "This certificate is awarded to the above sheriff for successfully completing the 'Family Safety Education' course and gaining the wisdom to protect the family's happiness from various crimes.",
+            certDate: "Date",
+            certFooter: "Family Safety Sheriff HQ",
+            eduTags: ["Romance Scam", "Voice Phishing", "Smishing", "Policy Scam", "AI Crime"],
+            eduTitles: [
+                "Real cases of 'Romance Scams' demanding money",
+                "How to respond to calls impersonating prosecutors",
+                "Dealing with 'Broken Screen' texts from fake family",
+                "Government subsidy texts are 100% scams",
+                "Distinguishing AI Deepfake scams with identical voices"
+            ],
+            btnEduStart: "View Content",
+            btnEduDone: "Review Again"
+        },
+        ja: {
+            headerTitle: "🛡️ 我が家の安全保安官",
+            headerSub: "家族の愛がこもった予防教育",
+            setupTitle: "1. 送り先のカスタム設定",
+            labelTarget: "誰に送りますか？",
+            optParent: "親御さん (孝行保安官)",
+            optChild: "お子さん (青年保安官)",
+            optSpouse: "配偶者 (守護保安官)",
+            labelName: "お名前",
+            placeholderName: "例：田中さん",
+            labelMsg: "心を込めたメッセージ",
+            placeholderMsg: "例：お母さん、これを見て詐欺に気をつけてね！",
+            btnGenerate: "教育リンクを作成",
+            linkReady: "リンクの準備ができました！",
+            btnCopy: "リンクをコピー",
+            welcome: "ようこそ！",
+            relationParent: "家族が準備した安全教育です。",
+            relationChild: "親が君のために準備した安全ミッションだよ！",
+            relationSpouse: "家族の幸せのために一緒に学びましょう。",
+            progressLabel: "進捗",
+            btnIssue: "🏆 修了証をPDFで保存",
+            alertInput: "お名前とメッセージを入力してください。",
+            alertCopy: "リンクがコピーされました。",
+            alertCertSuccess: "修了証が正常に発行されました！",
+            alertCertError: "PDF作成中に問題が発生しました。",
+            certTitle: "修 了 証",
+            certLabelName: "氏名",
+            certBody: "上記の保安官は、家族が丹精込めて準備した「我が家の安全教育」課程を誠実に履修し、各種詐欺犯罪から家族の幸せを守る知恵を身につけたため、本証を授与します。",
+            certDate: "発行日",
+            certFooter: "我が家の安全保安官本部",
+            eduTags: ["ロマンス詐欺", "振り込め詐欺", "スミッシング", "政策詐欺", "AI犯罪"],
+            eduTitles: [
+                "「ロマンス詐欺」の実際の事例と対策",
+                "検察・金融機関を騙る電話への対処法",
+                "「画面が割れた」という家族を騙るメールへの対応",
+                "政府支援金の案内メールは100％詐欺です",
+                "声までそっくりなAIディープフェイク詐欺の見分け方"
+            ],
+            btnEduStart: "内容を確認",
+            btnEduDone: "もう一度学ぶ"
+        }
+    };
+
+    let currentLang = 'ko';
+
     const educationData = [
-        { id: 1, tag: "로맨스 사기", title: "가짜 사랑으로 돈을 요구하는 '로맨스 스캠' 실제 사례", url: "https://www.youtube.com/results?search_query=로맨스스캠+사례" },
-        { id: 2, tag: "보이스피싱", title: "검찰·금융기관 사칭 전화를 받았을 때 대처법", url: "https://v.daum.net/v/20260328153012" },
-        { id: 3, tag: "스미싱", title: "가족 사칭 '휴대폰 액정 깨졌다' 문자 대응 요령", url: "https://www.youtube.com/results?search_query=자녀사칭+스미싱" },
-        { id: 4, tag: "정책 사기", title: "정부 지원금 문자는 100% 사기입니다 (클릭 금지)", url: "https://www.korea.kr/news/policyNewsView.do?newsId=148924373" },
-        { id: 5, tag: "AI 범죄", title: "목소리까지 똑같은 AI 딥페이크 사기 구별법", url: "https://v.daum.net/v/20260322000123" }
+        { id: 1, url: "https://www.youtube.com/results?search_query=로맨스스캠+사례" },
+        { id: 2, url: "https://v.daum.net/v/20260328153012" },
+        { id: 3, url: "https://www.youtube.com/results?search_query=자녀사칭+스미싱" },
+        { id: 4, url: "https://www.korea.kr/news/policyNewsView.do?newsId=148924373" },
+        { id: 5, url: "https://v.daum.net/v/20260322000123" }
     ];
+
+    function changeLang(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        updateUI();
+    }
+
+    function updateUI() {
+        const t = i18n[currentLang];
+        document.getElementById('header-title').innerText = t.headerTitle;
+        document.getElementById('header-sub').innerText = t.headerSub;
+        document.getElementById('setup-title').innerText = t.setupTitle;
+        document.getElementById('label-target').innerText = t.labelTarget;
+        document.getElementById('opt-parent').innerText = t.optParent;
+        document.getElementById('opt-child').innerText = t.optChild;
+        document.getElementById('opt-spouse').innerText = t.optSpouse;
+        document.getElementById('label-name').innerText = t.labelName;
+        document.getElementById('p_name').placeholder = t.placeholderName;
+        document.getElementById('label-msg').innerText = t.labelMsg;
+        document.getElementById('p_msg').placeholder = t.placeholderMsg;
+        document.getElementById('btn-generate').innerText = t.btnGenerate;
+        document.getElementById('link-ready-txt').innerText = t.linkReady;
+        document.getElementById('btn-copy').innerText = t.btnCopy;
+        document.getElementById('btn-issue').innerText = t.btnIssue;
+        document.getElementById('cert-title-pdf').innerText = t.certTitle;
+        document.getElementById('label-pdf-name').innerText = t.certLabelName;
+        document.getElementById('cert-body').innerText = t.certBody;
+        document.getElementById('label-pdf-date').innerText = t.certDate;
+        document.getElementById('pdf-footer').innerText = t.certFooter;
+
+        const params = new URLSearchParams(window.location.search);
+        if(params.get('name')) {
+            document.getElementById('welcome-txt').innerText = `${params.get('name')} ${currentLang === 'ko' ? '보안관님!' : currentLang === 'ja' ? '保安官様！' : 'Sheriff!'}`;
+            let relation = t.relationParent;
+            const target = params.get('target');
+            if(target === 'child') relation = t.relationChild;
+            if(target === 'spouse') relation = t.relationSpouse;
+            document.getElementById('relation-txt').innerText = relation;
+            renderEduList();
+        }
+    }
 
     function generateEduLink() {
         const target = document.getElementById('target_type').value;
         const name = document.getElementById('p_name').value;
         const msg = document.getElementById('p_msg').value;
-        if(!name || !msg) return alert("성함과 메시지를 입력해 주세요.");
+        if(!name || !msg) return alert(i18n[currentLang].alertInput);
 
         const baseUrl = window.location.href.split('?')[0];
-        const params = new URLSearchParams({ target, name, msg });
+        const params = new URLSearchParams({ target, name, msg, lang: currentLang });
         const finalUrl = `${baseUrl}?${params.toString()}`;
 
         document.getElementById('final-url').innerText = finalUrl;
@@ -246,44 +438,41 @@
     function copyLink() {
         const urlText = document.getElementById('final-url').innerText;
         if (navigator.share) {
-            navigator.share({ title: '안전 보안관 교육', text: '부모님, 자녀가 준비한 안전 교육입니다.', url: urlText });
+            navigator.share({ title: i18n[currentLang].headerTitle, text: i18n[currentLang].headerSub, url: urlText });
         } else {
-            navigator.clipboard.writeText(urlText).then(() => alert("링크가 복사되었습니다."));
+            navigator.clipboard.writeText(urlText).then(() => alert(i18n[currentLang].alertCopy));
         }
     }
 
     function init() {
         const params = new URLSearchParams(window.location.search);
-        const target = params.get('target');
+        const lang = params.get('lang') || 'ko';
+        document.getElementById('lang-select').value = lang;
+        changeLang(lang);
+
         const name = params.get('name');
         const msg = params.get('msg');
 
         if(name && msg) {
             document.getElementById('setup-section').style.display = 'none';
             document.getElementById('edu-section').style.display = 'block';
-            document.getElementById('welcome-txt').innerText = `${name} 보안관님!`;
-            
-            let relation = "가족이 준비한 안전 교육입니다.";
-            if(target === 'child') relation = "부모님이 너를 위해 준비한 안전 임무야!";
-            if(target === 'spouse') relation = "우리 가족의 행복을 위해 함께 배워봐요.";
-            document.getElementById('relation-txt').innerText = relation;
-            
-            renderEduList();
+            updateUI();
         }
     }
 
     function renderEduList() {
         const list = document.getElementById('edu-list');
         list.innerHTML = '';
-        educationData.forEach(item => {
+        const t = i18n[currentLang];
+        educationData.forEach((item, index) => {
             const isDone = localStorage.getItem(`edu_done_${item.id}`);
             const card = document.createElement('div');
             card.className = `edu-card ${isDone ? 'done' : ''}`;
             card.innerHTML = `
-                <span class="tag">${item.tag}</span>
-                <span class="card-title">${item.title}</span>
+                <span class="tag">${t.eduTags[index]}</span>
+                <span class="card-title">${t.eduTitles[index]}</span>
                 <a href="${item.url}" target="_blank" class="edu-btn" onclick="completeStep(${item.id})">
-                    ${isDone ? '다시 공부하기' : '교육 내용 확인'}
+                    ${isDone ? t.btnEduDone : t.btnEduStart}
                 </a>
             `;
             list.appendChild(card);
@@ -301,7 +490,7 @@
         educationData.forEach(item => { if(localStorage.getItem(`edu_done_${item.id}`)) count++; });
         const percent = (count / educationData.length) * 100;
         document.getElementById('progress-fill').style.width = percent + '%';
-        document.getElementById('status-txt').innerText = `진행도: ${count} / 5`;
+        document.getElementById('status-txt').innerText = `${i18n[currentLang].progressLabel}: ${count} / 5`;
         if(count >= 5) document.getElementById('issue-btn').style.display = 'block';
     }
 
@@ -309,6 +498,7 @@
         const params = new URLSearchParams(window.location.search);
         const name = params.get('name');
         const msg = params.get('msg');
+        const t = i18n[currentLang];
 
         document.getElementById('pdf-name').innerText = name;
         document.getElementById('pdf-msg').innerText = msg;
@@ -324,10 +514,10 @@
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`${name}_안전보안관_수료증.pdf`);
-            alert("수료증이 성공적으로 발급되었습니다!");
+            pdf.save(`${name}_Certificate.pdf`);
+            alert(t.alertCertSuccess);
         } catch (e) {
-            alert("PDF 생성 중 문제가 발생했습니다.");
+            alert(t.alertCertError);
         } finally {
             template.style.display = 'none';
         }
