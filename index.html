@@ -2,370 +2,250 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>우리집 안전 보안관 - 맞춤형 사기 예방 교육</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리집 안전 보안관 - 다국어 지원 시스템</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary: #2e7d32;
             --accent: #b59410;
-            --bg: #f0f2f0;
+            --bg: #f4f7f4;
             --white: #ffffff;
-            --text: #212121;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
             background-color: var(--bg);
             margin: 0; padding: 0;
             line-height: 1.6;
-            color: var(--text);
+        }
+
+        /* 언어 선택기 스타일 */
+        #lang-bar {
+            background: #1b5e20;
+            padding: 10px;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .lang-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
         }
 
         header {
             background-color: var(--primary);
             color: white;
-            padding: 40px 20px;
+            padding: 30px 20px;
             text-align: center;
-            border-bottom-left-radius: 25px;
-            border-bottom-right-radius: 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            position: relative;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
         }
 
-        header h1 { font-size: 1.8rem; margin: 0; word-break: keep-all; }
-        header p { font-size: 1rem; opacity: 0.9; margin: 10px 0 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-        .lang-selector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-        .lang-selector select {
-            padding: 5px;
-            border-radius: 5px;
-            border: none;
-            font-size: 0.8rem;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            cursor: pointer;
-        }
-        .lang-selector select option { color: black; }
-
-        .container { 
-            width: 100%; 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding: 20px; 
-        }
-
-        .glass-card {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .form-group { margin-bottom: 18px; }
-        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 1rem; color: #444; }
-        input, textarea, select { 
-            width: 100%; 
-            padding: 14px; 
-            border: 2px solid #eee; 
-            border-radius: 12px; 
-            font-size: 1rem; 
-            background: #fdfdfd;
-            transition: border-color 0.3s;
-        }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        /* 공통 카드 및 폼 스타일 */
+        section { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 10px; }
+        input, textarea, select { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        .btn-main { 
-            width: 100%; 
-            padding: 18px; 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            border-radius: 15px; 
-            font-size: 1.2rem; 
-            font-weight: bold; 
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .btn-main:active { transform: scale(0.98); }
-
-        #link-display { 
-            display: none; 
-            margin-top: 25px; 
-            padding: 20px; 
-            background: #e8f5e9; 
-            border-radius: 15px; 
-            border: 2px dashed var(--primary); 
-            text-align: center; 
-        }
-
+        /* 교육 리스트 스타일 */
         #edu-section { display: none; }
-        .progress-bar { height: 16px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 15px 0; }
-        #progress-fill { height: 100%; width: 0%; background: var(--primary); transition: width 0.5s ease; }
+        .edu-card { border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid #eee; position: relative; border-left: 8px solid #ccc; }
+        .edu-card.done { border-left-color: var(--primary); background: #f1f8e9; }
+        .edu-btn { display: block; margin-top: 10px; padding: 12px; background: #444; color: white; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .done .edu-btn { background: var(--primary); }
 
-        .edu-card { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 18px; 
-            margin-bottom: 15px; 
-            border-left: 6px solid #ddd; 
-            position: relative; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }
-        .edu-card.done { border-left-color: var(--primary); background-color: #f1f8e9; }
-        
-        .tag { font-size: 0.8rem; font-weight: bold; color: var(--primary); background: #e8f5e9; padding: 4px 10px; border-radius: 8px; margin-bottom: 8px; display: inline-block; }
-        .card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 15px; display: block; color: #333; word-break: keep-all; }
-        
-        .edu-btn { 
-            display: block; 
-            width: 100%; 
-            padding: 14px; 
-            background: #555; 
-            color: white; 
-            text-decoration: none; 
-            text-align: center; 
-            border-radius: 12px; 
-            font-weight: bold; 
-        }
-        .edu-card.done .edu-btn { background: var(--primary); }
+        #link-display { display: none; margin-top: 20px; padding: 15px; background: #e8f5e9; border: 2px dashed var(--primary); border-radius: 12px; text-align: center; }
 
-        #issue-btn { 
-            display: none; 
-            width: 100%; 
-            padding: 22px; 
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            border-radius: 15px; 
-            font-size: 1.3rem; 
-            font-weight: bold; 
-            margin-top: 10px;
-            box-shadow: 0 8px 15px rgba(181, 148, 16, 0.3);
-        }
-
-        #cert-template {
-            display: none; width: 700px; padding: 50px; border: 15px double var(--accent); background: white;
-            text-align: center; position: fixed; left: -9999px; top: 0;
-        }
-
-        @media (max-width: 480px) {
-            header h1 { font-size: 1.5rem; }
-            .container { padding: 15px; }
-            .card-title { font-size: 1.05rem; }
-            .btn-main { font-size: 1.1rem; }
-        }
+        /* 수료증 템플릿 (숨김) */
+        #cert-wrapper { position: absolute; left: -9999px; top: -9999px; }
+        #cert-template { width: 800px; padding: 60px; border: 20px double var(--accent); background: white; text-align: center; color: #212121; }
     </style>
 </head>
 <body>
 
+<div id="lang-bar">
+    <button id="btn-ko" class="lang-btn active" onclick="changeLang('ko')">한국어</button>
+    <button id="btn-en" class="lang-btn" onclick="changeLang('en')">English</button>
+    <button id="btn-zh" class="lang-btn" onclick="changeLang('zh')">中文</button>
+    <button id="btn-ja" class="lang-btn" onclick="changeLang('ja')">日本語</button>
+</div>
+
 <header>
-    <div class="lang-selector">
-        <select id="lang-select" onchange="changeLang(this.value)">
-            <option value="ko">한국어</option>
-            <option value="en">English</option>
-            <option value="ja">日本語</option>
-        </select>
-    </div>
-    <h1 id="header-title">🛡️ 우리집 안전 보안관</h1>
-    <p id="header-sub">가족의 사랑이 담긴 예방 교육</p>
+    <h1 id="txt-title">🛡️ 우리집 안전 보안관</h1>
+    <p id="txt-subtitle">사랑하는 가족을 위한 맞춤 교육</p>
 </header>
 
 <div class="container">
-    <section id="setup-section" class="glass-card">
-        <h3 id="setup-title" style="margin-top:0;">1. 받는 분 맞춤 설정</h3>
+    <section id="setup-section">
+        <h2 id="txt-setup-h2">1. 교육 대상 설정</h2>
         <div class="form-group">
-            <label id="label-target">어떤 분에게 보낼까요?</label>
+            <label id="txt-label-target">누구에게 보낼까요?</label>
             <select id="target_type">
-                <option value="parent" id="opt-parent">부모님 (효도 보안관)</option>
-                <option value="child" id="opt-child">자녀 (청년 보안관)</option>
-                <option value="spouse" id="opt-spouse">배우자 (수호 보안관)</option>
+                <option value="parent" id="txt-opt-parent">부모님께 (효도 보안관)</option>
+                <option value="child" id="txt-opt-child">자녀에게 (청년 보안관)</option>
+                <option value="spouse" id="txt-opt-spouse">배우자에게 (파트너 보안관)</option>
             </select>
         </div>
         <div class="form-group">
-            <label id="label-name">받는 분 성함</label>
-            <input type="text" id="p_name" placeholder="예: 김순자">
+            <label id="txt-label-name">받는 분 성함</label>
+            <input type="text" id="p_name" placeholder="성함을 입력하세요">
         </div>
         <div class="form-group">
-            <label id="label-msg">마음을 전하는 한마디</label>
-            <textarea id="p_msg" rows="3" placeholder="예: 엄마, 이거 보시고 사기 걱정 없이 행복하게 살자!"></textarea>
+            <label id="txt-label-msg">사랑의 메시지</label>
+            <textarea id="p_msg" placeholder="사기 당하지 말고 행복하게 살자!"></textarea>
         </div>
-        <button id="btn-generate" class="btn-main" onclick="generateEduLink()">교육 링크 만들기</button>
+        <button class="btn-main" id="txt-btn-generate" onclick="generateLink()">교육 링크 생성</button>
 
         <div id="link-display">
-            <p id="link-ready-txt" style="font-weight:bold; color:var(--primary); margin-bottom:15px;">링크가 준비되었습니다!</p>
-            <button id="btn-copy" class="btn-main" style="background:#fee500; color:#3c1e1e;" onclick="copyLink()">링크 복사하기</button>
-            <p id="final-url" style="font-size:0.75rem; color:#999; word-break:break-all; margin-top:15px;"></p>
+            <p id="txt-link-ready" style="font-weight:bold; color:var(--primary);">링크가 준비되었습니다!</p>
+            <button class="btn-main" style="background:#fee500; color:#3c1e1e;" id="txt-btn-copy" onclick="copyUrl()">링크 복사 후 카톡 전송</button>
+            <p id="final-url" style="font-size:0.75rem; color:#888; word-break:break-all; margin-top:10px;"></p>
         </div>
     </section>
 
     <section id="edu-section">
-        <div class="glass-card" style="text-align: center;">
-            <h2 id="welcome-txt" style="margin:0; color:var(--primary); font-size: 1.5rem;">환영합니다!</h2>
-            <p id="relation-txt" style="margin:10px 0; font-size: 0.95rem; color: #666;"></p>
-            <div class="progress-bar"><div id="progress-fill"></div></div>
-            <div id="status-txt" style="font-weight:bold; font-size: 0.9rem;">진행도: 0 / 5</div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h2 id="txt-edu-welcome">보안관님 환영합니다!</h2>
+            <p id="txt-edu-desc">가족이 준비한 5가지 교육을 완료해 주세요.</p>
+            <div style="background:#eee; height:15px; border-radius:10px; overflow:hidden; margin:15px 0;">
+                <div id="progress-fill" style="width:0%; height:100%; background:var(--primary); transition:0.3s;"></div>
+            </div>
+            <p id="txt-progress">진행도: 0 / 5</p>
         </div>
-
         <div id="edu-list"></div>
-
-        <button id="issue-btn" onclick="issueCertificate()">🏆 수료증 PDF 저장하기</button>
+        <button id="issue-btn" class="btn-main" style="display:none; background:var(--accent);" onclick="issueCert()">🏆 수료증 발급 (PDF)</button>
     </section>
 </div>
 
-<div id="cert-template">
-    <div id="cert-title-pdf" style="font-size: 3.5rem; color: #b59410; font-weight: bold; margin-bottom: 20px;">수 료 증</div>
-    <div style="font-size: 2.2rem; font-weight: bold; margin-bottom: 30px;"><span id="label-pdf-name">성명</span>: <span id="pdf-name"></span></div>
-    <div id="cert-body" style="font-size: 1.4rem; line-height: 1.8; margin-bottom: 40px; word-break: keep-all; padding: 0 30px;">
-        위 보안관님은 가족이 정성껏 준비한 '우리집 안전 교육' 과정을 성실히 이수하여 각종 사기 범죄로부터 가족의 행복을 지킬 지혜를 갖추었으므로 이 증서를 수여합니다.
-    </div>
-    <div style="background: #fdfae6; padding: 30px; border-radius: 15px; font-size: 1.3rem; color: #444; border: 1px solid #ddd; margin: 0 20px;">
-        " <span id="pdf-msg"></span> "
-    </div>
-    <div style="margin-top: 50px; font-size: 1.2rem; color: #888;">
-        <span id="label-pdf-date">발급일</span>: 2026년 3월 29일<br><br>
-        <b id="pdf-footer" style="font-size: 1.8rem; color: #333;">우리집 안전 보안관 본부</b>
+<div id="cert-wrapper">
+    <div id="cert-template">
+        <div id="pdf-title" style="font-size: 3.5rem; color: #b59410; font-weight: bold; margin-bottom: 20px;">수 료 증</div>
+        <div style="font-size: 2.2rem; font-weight: bold; margin-bottom: 30px;"><span id="pdf-label-name">성명</span>: <span id="pdf-val-name"></span></div>
+        <div id="pdf-body" style="font-size: 1.5rem; line-height: 1.8; margin-bottom: 40px; word-break: keep-all; padding: 0 40px;">
+            위 보안관님은 가족이 정성껏 준비한 사기 예방 교육을 모두 이수하였으므로 이 증서를 수여합니다.
+        </div>
+        <div style="background: #fdfae6; padding: 30px; border-radius: 20px; font-size: 1.4rem; color: #444; font-style: italic; border: 1px solid #eee; margin: 0 40px;">
+            " <span id="pdf-val-msg"></span> "
+        </div>
+        <div style="margin-top: 50px; font-size: 1.2rem; color: #888;">
+            <span id="pdf-date-label">발급일</span>: 2026. 03. 28<br><br>
+            <b id="pdf-footer" style="font-size: 1.6rem; color: #333;">우리집 안전 보안관 본부</b>
+        </div>
     </div>
 </div>
 
 <script>
-    const i18n = {
+    // 1. 번역 데이터 (교육 제목 추가 및 플레이스홀더 추가)
+    const langData = {
         ko: {
-            headerTitle: "🛡️ 우리집 안전 보안관",
-            headerSub: "가족의 사랑이 담긴 예방 교육",
-            setupTitle: "1. 받는 분 맞춤 설정",
-            labelTarget: "어떤 분에게 보낼까요?",
-            optParent: "부모님 (효도 보안관)",
-            optChild: "자녀 (청년 보안관)",
-            optSpouse: "배우자 (수호 보안관)",
-            labelName: "받는 분 성함",
-            placeholderName: "예: 김순자",
-            labelMsg: "마음을 전하는 한마디",
-            placeholderMsg: "예: 엄마, 이거 보시고 사기 걱정 없이 행복하게 살자!",
-            btnGenerate: "교육 링크 만들기",
-            linkReady: "링크가 준비되었습니다!",
-            btnCopy: "링크 복사하기",
-            welcome: "환영합니다!",
-            relationParent: "가족이 준비한 안전 교육입니다.",
-            relationChild: "부모님이 너를 위해 준비한 안전 임무야!",
-            relationSpouse: "우리 가족의 행복을 위해 함께 배워봐요.",
-            progressLabel: "진행도",
-            btnIssue: "🏆 수료증 PDF 저장하기",
-            alertInput: "성함과 메시지를 입력해 주세요.",
-            alertCopy: "링크가 복사되었습니다.",
-            alertCertSuccess: "수료증이 성공적으로 발급되었습니다!",
-            alertCertError: "PDF 생성 중 문제가 발생했습니다.",
-            certTitle: "수 료 증",
-            certLabelName: "성명",
-            certBody: "위 보안관님은 가족이 정성껏 준비한 '우리집 안전 교육' 과정을 성실히 이수하여 각종 사기 범죄로부터 가족의 행복을 지킬 지혜를 갖추었으므로 이 증서를 수여합니다.",
-            certDate: "발급일",
-            certFooter: "우리집 안전 보안관 본부",
-            eduTags: ["로맨스 사기", "보이스피싱", "스미싱", "정책 사기", "AI 범죄"],
-            eduTitles: [
-                "가짜 사랑으로 돈을 요구하는 '로맨스 스캠' 실제 사례",
-                "검찰·금융기관 사칭 전화를 받았을 때 대처법",
-                "가족 사칭 '휴대폰 액정 깨졌다' 문자 대응 요령",
-                "정부 지원금 문자는 100% 사기입니다 (클릭 금지)",
-                "목소리까지 똑같은 AI 딥페이크 사기 구별법"
-            ],
-            btnEduStart: "교육 내용 확인",
-            btnEduDone: "다시 공부하기"
+            title: "🛡️ 우리집 안전 보안관", subtitle: "사랑하는 가족을 위한 맞춤 교육",
+            setupH2: "1. 교육 대상 설정", labelTarget: "누구에게 보낼까요?", optParent: "부모님께 (효도 보안관)", optChild: "자녀에게 (청년 보안관)", optSpouse: "배우자에게 (파트너 보안관)",
+            labelName: "받는 분 성함", labelMsg: "사랑의 메시지", btnGenerate: "교육 링크 생성",
+            placeholderName: "성함을 입력하세요", placeholderMsg: "사기 당하지 말고 행복하게 살자!",
+            linkReady: "링크가 준비되었습니다!", btnCopy: "링크 복사 후 카톡 전송",
+            eduWelcome: "보안관님 환영합니다!", eduDesc: "가족이 준비한 5가지 교육을 완료해 주세요.", progress: "진행도",
+            certTitle: "수 료 증", certBody: "위 보안관님은 가족이 정성껏 준비한 사기 예방 교육을 모두 이수하였으므로 이 증서를 수여합니다.",
+            pdfName: "성명", pdfDate: "발급일", pdfFooter: "우리집 안전 보안관 본부",
+            eduBtn: "뉴스/영상 보기", alertLink: "링크가 복사되었습니다!",
+            eduTitles: ["로맨스 스캠 사례", "보이스피싱 뉴스", "가족 사칭 주의", "대출 사기 경보", "AI 목소리 사기"]
         },
         en: {
-            headerTitle: "🛡️ Family Safety Sheriff",
-            headerSub: "Prevention Education with Family Love",
-            setupTitle: "1. Custom Settings for Recipient",
-            labelTarget: "Who are you sending this to?",
-            optParent: "Parents (Filial Sheriff)",
-            optChild: "Children (Youth Sheriff)",
-            optSpouse: "Spouse (Guardian Sheriff)",
-            labelName: "Recipient's Name",
-            placeholderName: "e.g., Jane Doe",
-            labelMsg: "A Message from the Heart",
-            placeholderMsg: "e.g., Mom, please watch this and stay safe from scams!",
-            btnGenerate: "Create Education Link",
-            linkReady: "Link is ready!",
-            btnCopy: "Copy Link",
-            welcome: "Welcome!",
-            relationParent: "This is a safety education prepared by your family.",
-            relationChild: "This is a safety mission prepared by your parents!",
-            relationSpouse: "Let's learn together for our family's happiness.",
-            progressLabel: "Progress",
-            btnIssue: "🏆 Save Certificate as PDF",
-            alertInput: "Please enter a name and message.",
-            alertCopy: "Link copied to clipboard.",
-            alertCertSuccess: "Certificate issued successfully!",
-            alertCertError: "There was a problem generating the PDF.",
-            certTitle: "CERTIFICATE",
-            certLabelName: "Name",
-            certBody: "This certificate is awarded to the above sheriff for successfully completing the 'Family Safety Education' course and gaining the wisdom to protect the family's happiness from various crimes.",
-            certDate: "Date",
-            certFooter: "Family Safety Sheriff HQ",
-            eduTags: ["Romance Scam", "Voice Phishing", "Smishing", "Policy Scam", "AI Crime"],
-            eduTitles: [
-                "Real cases of 'Romance Scams' demanding money",
-                "How to respond to calls impersonating prosecutors",
-                "Dealing with 'Broken Screen' texts from fake family",
-                "Government subsidy texts are 100% scams",
-                "Distinguishing AI Deepfake scams with identical voices"
-            ],
-            btnEduStart: "View Content",
-            btnEduDone: "Review Again"
+            title: "🛡️ Family Safety Sheriff", subtitle: "Customized Education for Your Loved Ones",
+            setupH2: "1. Setup Education Target", labelTarget: "Who is this for?", optParent: "For Parents", optChild: "For Children", optSpouse: "For Spouse",
+            labelName: "Recipient Name", labelMsg: "Message of Love", btnGenerate: "Create Education Link",
+            placeholderName: "Enter name", placeholderMsg: "Stay safe and be happy!",
+            linkReady: "Link is Ready!", btnCopy: "Copy Link & Send",
+            eduWelcome: "Welcome, Sheriff!", eduDesc: "Please complete the 5 safety missions.", progress: "Progress",
+            certTitle: "Certificate", certBody: "This certificate is awarded for successfully completing the family safety education prepared by your family.",
+            pdfName: "Name", pdfDate: "Date", pdfFooter: "Family Safety Sheriff Center",
+            eduBtn: "View News/Video", alertLink: "Link copied to clipboard!",
+            eduTitles: ["Romance Scam Case", "Voice Phishing News", "Family Impersonation", "Loan Scam Alert", "AI Voice Scam"]
+        },
+        zh: {
+            title: "🛡️ 居家安全保安官", subtitle: "为挚爱家人量身定制的安全教育",
+            setupH2: "1. 设置教育对象", labelTarget: "发送给谁？", optParent: "送给父母", optChild: "送给子女", optSpouse: "送给配偶",
+            labelName: "接收人姓名", labelMsg: "爱心寄语", btnGenerate: "生成教育链接",
+            placeholderName: "请输入姓名", placeholderMsg: "愿您远离诈骗，幸福生活！",
+            linkReady: "链接已就绪！", btnCopy: "复制链接并发送",
+            eduWelcome: "欢迎，保安官！", eduDesc: "请完成家人为您准备的5项安全任务。", progress: "进度",
+            certTitle: "结业证书", certBody: "鉴于您圆满完成了家人准备的安全教育课程，特发此证，以资鼓励。",
+            pdfName: "姓名", pdfDate: "签发日期", pdfFooter: "居家安全保安官总部",
+            eduBtn: "查看新闻/视频", alertLink: "链接已复制！",
+            eduTitles: ["浪漫陷阱案例", "电信诈骗新闻", "冒充亲友诈骗", "贷款诈骗警报", "AI语音诈骗"]
         },
         ja: {
-            headerTitle: "🛡️ 我が가의 安全保安官",
-            headerSub: "家族の愛がこもった予防教育",
-            setupTitle: "1. 送り先のカスタム設定",
-            labelTarget: "誰に送りますか？",
-            optParent: "親御さん (孝行保安官)",
-            optChild: "お子さん (青年保安官)",
-            optSpouse: "配偶者 (守護保安官)",
-            labelName: "お名前",
-            placeholderName: "例：田中さん",
-            labelMsg: "心を込めたメッセージ",
-            placeholderMsg: "例：お母さん、これを見て詐欺に気をつけてね！",
-            btnGenerate: "教育リンクを作成",
-            linkReady: "링크의 준비가되었습니다!",
-            btnCopy: "링크를 복사",
-            welcome: "ようこそ！",
-            relationParent: "家族が準備した安全教育です。",
-            relationChild: "親が君のために準備した安全ミッションだよ！",
-            relationSpouse: "家族の幸せのために一緒に学びましょう。",
-            progressLabel: "進捗",
-            btnIssue: "🏆 修了証をPDFで保存",
-            alertInput: "お名前とメッセージを入力してください。",
-            alertCopy: "링크가 복사되었습니다.",
-            alertCertSuccess: "修了証が正常に発行されました！",
-            alertCertError: "PDF作成中に問題が発生しました。",
-            certTitle: "修 了 証",
-            certLabelName: "氏名",
-            certBody: "上記の保安官は、家族が丹精込めて準備した「我が家の安全教育」課程を誠実に履修し、各種詐欺犯罪から家族の幸せを守る知恵を身につけたため、本証を授与します。",
-            certDate: "発行日",
-            certFooter: "我が家の安全保安官本部",
-            eduTags: ["ロマンス詐欺", "振り込め詐欺", "スミッシング", "政策詐欺", "AI犯罪"],
-            eduTitles: [
-                "「ロマンス詐欺」の実際の事例と対策",
-                "検察・金融機関を騙る電話への対処法",
-                "「画面가割れた」という家族を騙るメールへの対応",
-                "政府支援金の案内メールは100％詐欺です",
-                "声までそっくりなAIディープフェイク詐欺の見分け方"
-            ],
-            btnEduStart: "内容を確認",
-            btnEduDone: "もう一度学ぶ"
+            title: "🛡️ 我が家の安全保安官", subtitle: "大切な家族のための防犯教育",
+            setupH2: "1. 교육 대상 설정", labelTarget: "누구에게 보낼까요?", optParent: "ご両親へ", optChild: "お子様へ", optSpouse: "配偶者へ",
+            labelName: "お名前", labelMsg: "愛의 메시지", btnGenerate: "교육 링크를 생성",
+            placeholderName: "名前を入力してください", placeholderMsg: "詐欺에遭わず、幸せに暮らそう！",
+            linkReady: "링크가 준비되었습니다!", btnCopy: "コピーして送信",
+            eduWelcome: "ようこそ、保安官様！", eduDesc: "家族이を用意した5つの教育を完了してください。", progress: "進捗",
+            certTitle: "修了証", certBody: "あなたは家族이用意한防犯教育課程을誠実に修了したため、本証을授与します。",
+            pdfName: "氏명", pdfDate: "발급일", pdfFooter: "我が家の安全保安官本部",
+            eduBtn: "뉴스/영상 보기", alertLink: "링크를 복사했습니다!"
         }
     };
 
     let currentLang = 'ko';
 
-    const educationData = [
+    // 2. 언어 변경 함수 (모든 요소 업데이트)
+    function changeLang(lang) {
+        currentLang = lang;
+        // 버튼 활성화 스타일
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`btn-${lang}`);
+        if(activeBtn) activeBtn.classList.add('active');
+
+        // 텍스트 교체
+        const d = langData[lang];
+        document.getElementById('txt-title').innerText = d.title;
+        document.getElementById('txt-subtitle').innerText = d.subtitle;
+        document.getElementById('txt-setup-h2').innerText = d.setupH2;
+        document.getElementById('txt-label-target').innerText = d.labelTarget;
+        document.getElementById('txt-opt-parent').innerText = d.optParent;
+        document.getElementById('txt-opt-child').innerText = d.optChild;
+        document.getElementById('txt-opt-spouse').innerText = d.optSpouse;
+        document.getElementById('txt-label-name').innerText = d.labelName;
+        document.getElementById('p_name').placeholder = d.placeholderName; // 플레이스홀더 추가
+        document.getElementById('txt-label-msg').innerText = d.labelMsg;
+        document.getElementById('p_msg').placeholder = d.placeholderMsg; // 플레이스홀더 추가
+        document.getElementById('txt-btn-generate').innerText = d.btnGenerate;
+        document.getElementById('txt-link-ready').innerText = d.linkReady;
+        document.getElementById('txt-btn-copy').innerText = d.btnCopy;
+        document.getElementById('txt-edu-welcome').innerText = d.eduWelcome;
+        document.getElementById('txt-edu-desc').innerText = d.eduDesc;
+
+        // 수료증 템플릿 텍스트 교체
+        document.getElementById('pdf-title').innerText = d.certTitle;
+        document.getElementById('pdf-body').innerText = d.certBody;
+        document.getElementById('pdf-label-name').innerText = d.pdfName;
+        document.getElementById('pdf-date-label').innerText = d.pdfDate;
+        document.getElementById('pdf-footer').innerText = d.pdfFooter;
+
+        // 교육 화면 리렌더링 (목록 제목 및 버튼 언어 갱신)
+        if(document.getElementById('edu-section').style.display === 'block') {
+            renderList();
+        }
+    }
+
+    // 3. 기능 로직
+    const eduItems = [
         { id: 1, url: "https://www.youtube.com/results?search_query=로맨스스캠+사례" },
         { id: 2, url: "https://v.daum.net/v/20260328153012" },
         { id: 3, url: "https://www.youtube.com/results?search_query=자녀사칭+스미싱" },
@@ -373,166 +253,76 @@
         { id: 5, url: "https://v.daum.net/v/20260322000123" }
     ];
 
-    function changeLang(lang) {
-        currentLang = lang;
-        document.documentElement.lang = lang;
-        updateUI();
-    }
-
-    function updateUI() {
-        const t = i18n[currentLang];
-        if(!t) return;
-        
-        document.getElementById('header-title').innerText = t.headerTitle;
-        document.getElementById('header-sub').innerText = t.headerSub;
-        document.getElementById('setup-title').innerText = t.setupTitle;
-        document.getElementById('label-target').innerText = t.labelTarget;
-        document.getElementById('opt-parent').innerText = t.optParent;
-        document.getElementById('opt-child').innerText = t.optChild;
-        document.getElementById('opt-spouse').innerText = t.optSpouse;
-        document.getElementById('label-name').innerText = t.labelName;
-        document.getElementById('p_name').placeholder = t.placeholderName;
-        document.getElementById('label-msg').innerText = t.labelMsg;
-        document.getElementById('p_msg').placeholder = t.placeholderMsg;
-        document.getElementById('btn-generate').innerText = t.btnGenerate;
-        document.getElementById('link-ready-txt').innerText = t.linkReady;
-        document.getElementById('btn-copy').innerText = t.btnCopy;
-        document.getElementById('btn-issue').innerText = t.btnIssue;
-        document.getElementById('cert-title-pdf').innerText = t.certTitle;
-        document.getElementById('label-pdf-name').innerText = t.certLabelName;
-        document.getElementById('cert-body').innerText = t.certBody;
-        document.getElementById('label-pdf-date').innerText = t.certDate;
-        document.getElementById('pdf-footer').innerText = t.certFooter;
-
-        const params = new URLSearchParams(window.location.search);
-        const name = params.get('name');
-        if(name) {
-            document.getElementById('welcome-txt').innerText = `${name} ${currentLang === 'ko' ? '보안관님!' : currentLang === 'ja' ? '保安官様！' : 'Sheriff!'}`;
-            let relation = t.relationParent;
-            const target = params.get('target');
-            if(target === 'child') relation = t.relationChild;
-            if(target === 'spouse') relation = t.relationSpouse;
-            document.getElementById('relation-txt').innerText = relation;
-            renderEduList();
-        }
-    }
-
-    function generateEduLink() {
+    function generateLink() {
         const target = document.getElementById('target_type').value;
         const name = document.getElementById('p_name').value;
         const msg = document.getElementById('p_msg').value;
-        if(!name || !msg) return alert(i18n[currentLang].alertInput);
+        if(!name || !msg) return alert(currentLang === 'ko' ? "내용을 모두 입력해주세요." : "Please fill in all fields.");
 
-        const baseUrl = window.location.href.split('?')[0];
-        const params = new URLSearchParams({ target, name, msg, lang: currentLang });
-        const finalUrl = `${baseUrl}?${params.toString()}`;
-
-        document.getElementById('final-url').innerText = finalUrl;
+        const url = `${window.location.href.split('?')[0]}?lang=${currentLang}&target=${target}&name=${encodeURIComponent(name)}&msg=${encodeURIComponent(msg)}`;
+        document.getElementById('final-url').innerText = url;
         document.getElementById('link-display').style.display = 'block';
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    function copyLink() {
-        const urlText = document.getElementById('final-url').innerText;
-        if (navigator.share) {
-            navigator.share({ title: i18n[currentLang].headerTitle, text: i18n[currentLang].headerSub, url: urlText });
-        } else {
-            navigator.clipboard.writeText(urlText).then(() => alert(i18n[currentLang].alertCopy));
-        }
+    function copyUrl() {
+        navigator.clipboard.writeText(document.getElementById('final-url').innerText);
+        alert(langData[currentLang].alertLink);
     }
 
-    function init() {
-        const params = new URLSearchParams(window.location.search);
-        const lang = params.get('lang') || 'ko';
-        const name = params.get('name');
-        const msg = params.get('msg');
-
-        document.getElementById('lang-select').value = lang;
-        changeLang(lang);
-
-        if(name && msg) {
-            document.getElementById('setup-section').style.display = 'none';
-            document.getElementById('edu-section').style.display = 'block';
-        } else {
-            document.getElementById('setup-section').style.display = 'block';
-            document.getElementById('edu-section').style.display = 'none';
-        }
-    }
-
-    function renderEduList() {
+    function renderList() {
         const list = document.getElementById('edu-list');
-        if(!list) return;
         list.innerHTML = '';
-        const t = i18n[currentLang];
-        educationData.forEach((item, index) => {
-            const isDone = localStorage.getItem(`edu_done_${item.id}`);
-            const card = document.createElement('div');
-            card.className = `edu-card ${isDone ? 'done' : ''}`;
-            card.innerHTML = `
-                <span class="tag">${t.eduTags[index]}</span>
-                <span class="card-title">${t.eduTitles[index]}</span>
-                <a href="${item.url}" target="_blank" class="edu-btn" onclick="completeStep(${item.id})">
-                    ${isDone ? t.btnEduDone : t.btnEduStart}
-                </a>
+        const d = langData[currentLang];
+        eduItems.forEach((item, index) => {
+            const isDone = localStorage.getItem(`done_${item.id}`);
+            const div = document.createElement('div');
+            div.className = `edu-card ${isDone ? 'done' : ''}`;
+            div.innerHTML = `
+                <span style="font-weight:bold;">${d.eduTitles ? d.eduTitles[index] : 'Mission ' + (index+1)}</span>
+                <a href="${item.url}" target="_blank" class="edu-btn" onclick="done(${item.id})">${d.eduBtn}</a>
             `;
-            list.appendChild(card);
+            list.appendChild(div);
         });
         updateStatus();
     }
 
-    function completeStep(id) {
-        localStorage.setItem(`edu_done_${id}`, 'true');
-        setTimeout(() => renderEduList(), 1000);
+    function done(id) {
+        localStorage.setItem(`done_${id}`, 'true');
+        setTimeout(renderList, 1000);
     }
 
     function updateStatus() {
         let count = 0;
-        educationData.forEach(item => { if(localStorage.getItem(`edu_done_${item.id}`)) count++; });
-        const percent = (count / educationData.length) * 100;
-        const fill = document.getElementById('progress-fill');
-        const txt = document.getElementById('status-txt');
-        if(fill) fill.style.width = percent + '%';
-        if(txt) txt.innerText = `${i18n[currentLang].progressLabel}: ${count} / 5`;
-        if(count >= 5) {
-            const btn = document.getElementById('issue-btn');
-            if(btn) btn.style.display = 'block';
-        }
+        eduItems.forEach(i => { if(localStorage.getItem(`done_${i.id}`)) count++; });
+        document.getElementById('progress-fill').style.width = (count/5*100) + '%';
+        document.getElementById('txt-progress').innerText = `${langData[currentLang].progress}: ${count} / 5`;
+        if(count >= 5) document.getElementById('issue-btn').style.display = 'block';
     }
 
-    async function issueCertificate() {
+    async function issueCert() {
         const params = new URLSearchParams(window.location.search);
-        const name = params.get('name');
-        const msg = params.get('msg');
-        const t = i18n[currentLang];
-
-        const pdfName = document.getElementById('pdf-name');
-        const pdfMsg = document.getElementById('pdf-msg');
-        if(pdfName) pdfName.innerText = name;
-        if(pdfMsg) pdfMsg.innerText = msg;
-
+        document.getElementById('pdf-val-name').innerText = params.get('name');
+        document.getElementById('pdf-val-msg').innerText = params.get('msg');
+        
         const template = document.getElementById('cert-template');
-        if(!template) return;
-        template.style.display = 'block';
-
-        try {
-            const canvas = await html2canvas(template, { scale: 2 });
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`${name}_Certificate.pdf`);
-            alert(t.alertCertSuccess);
-        } catch (e) {
-            alert(t.alertCertError);
-        } finally {
-            template.style.display = 'none';
-        }
+        const canvas = await html2canvas(template, { scale: 2 });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+        pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+        pdf.save(`${params.get('name')}_Certificate.pdf`);
     }
 
-    window.onload = init;
+    // 4. 초기화
+    window.onload = () => {
+        const params = new URLSearchParams(window.location.search);
+        if(params.get('name')) {
+            const lang = params.get('lang') || 'ko';
+            changeLang(lang); // URL 언어에 맞게 UI 전체 업데이트
+            document.getElementById('setup-section').style.display = 'none';
+            document.getElementById('edu-section').style.display = 'block';
+            renderList();
+        }
+    };
 </script>
-
 </body>
 </html>
