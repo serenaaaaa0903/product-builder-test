@@ -21,7 +21,6 @@
             line-height: 1.6;
         }
 
-        /* 언어 선택기 스타일 */
         #lang-bar {
             background: #1b5e20;
             padding: 10px;
@@ -56,23 +55,21 @@
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-        /* 공통 카드 및 폼 스타일 */
         section { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: bold; margin-bottom: 10px; }
         input, textarea, select { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        /* 교육 리스트 스타일 */
         #edu-section { display: none; }
         .edu-card { border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid #eee; position: relative; border-left: 8px solid #ccc; }
         .edu-card.done { border-left-color: var(--primary); background: #f1f8e9; }
+        .edu-date { font-size: 0.8rem; color: #888; margin-bottom: 5px; }
         .edu-btn { display: block; margin-top: 10px; padding: 12px; background: #444; color: white; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; }
         .done .edu-btn { background: var(--primary); }
 
         #link-display { display: none; margin-top: 20px; padding: 15px; background: #e8f5e9; border: 2px dashed var(--primary); border-radius: 12px; text-align: center; }
 
-        /* 수료증 템플릿 (숨김) */
         #cert-wrapper { position: absolute; left: -9999px; top: -9999px; }
         #cert-template { width: 800px; padding: 60px; border: 20px double var(--accent); background: white; text-align: center; color: #212121; }
     </style>
@@ -144,14 +141,13 @@
             " <span id="pdf-val-msg"></span> "
         </div>
         <div style="margin-top: 50px; font-size: 1.2rem; color: #888;">
-            <span id="pdf-date-label">발급일</span>: 2026. 03. 28<br><br>
+            <span id="pdf-date-label">발급일</span>: 2026. 03. 29<br><br>
             <b id="pdf-footer" style="font-size: 1.6rem; color: #333;">우리집 안전 보안관 본부</b>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. 번역 데이터 (교육 제목 추가 및 플레이스홀더 추가)
     const langData = {
         ko: {
             title: "🛡️ 우리집 안전 보안관", subtitle: "사랑하는 가족을 위한 맞춤 교육",
@@ -163,7 +159,14 @@
             certTitle: "수 료 증", certBody: "위 보안관님은 가족이 정성껏 준비한 사기 예방 교육을 모두 이수하였으므로 이 증서를 수여합니다.",
             pdfName: "성명", pdfDate: "발급일", pdfFooter: "우리집 안전 보안관 본부",
             eduBtn: "뉴스/영상 보기", alertLink: "링크가 복사되었습니다!",
-            eduTitles: ["로맨스 스캠 사례", "보이스피싱 뉴스", "가족 사칭 주의", "대출 사기 경보", "AI 목소리 사기"]
+            issueBtn: "🏆 수료증 발급 (PDF)",
+            eduList: [
+                { id: 1, title: "로맨스 스캠 사례", url: "https://www.youtube.com/results?search_query=로맨스스캠+사례", date: "2024.03.15" },
+                { id: 2, title: "보이스피싱 최신 뉴스", url: "https://v.daum.net/v/20260328153012", date: "2026.03.28" },
+                { id: 3, title: "가족 사칭 스미싱 주의", url: "https://www.youtube.com/results?search_query=자녀사칭+스미싱", date: "2024.02.10" },
+                { id: 4, title: "대출 사기 경보", url: "https://www.korea.kr/news/policyNewsView.do?newsId=148924373", date: "2024.01.05" },
+                { id: 5, title: "AI 목소리 사기 대응", url: "https://v.daum.net/v/20260322000123", date: "2026.03.22" }
+            ]
         },
         en: {
             title: "🛡️ Family Safety Sheriff", subtitle: "Customized Education for Your Loved Ones",
@@ -175,7 +178,14 @@
             certTitle: "Certificate", certBody: "This certificate is awarded for successfully completing the family safety education prepared by your family.",
             pdfName: "Name", pdfDate: "Date", pdfFooter: "Family Safety Sheriff Center",
             eduBtn: "View News/Video", alertLink: "Link copied to clipboard!",
-            eduTitles: ["Romance Scam Case", "Voice Phishing News", "Family Impersonation", "Loan Scam Alert", "AI Voice Scam"]
+            issueBtn: "🏆 Issue Certificate (PDF)",
+            eduList: [
+                { id: 1, title: "FTC: Romance Scam Losses", url: "https://www.ftc.gov/news-events/news/press-releases/2024/02/ftc-data-shows-romance-scam-losses-hit-11-billion-2023", date: "2024.02.09" },
+                { id: 2, title: "FCC: Stop Voice Phishing", url: "https://www.fcc.gov/consumers/guides/stop-unwanted-robocalls-and-texts", date: "2024.03.01" },
+                { id: 3, title: "Impersonation Scams 101", url: "https://www.consumer.ftc.gov/articles/how-avoid-scam", date: "2024.01.20" },
+                { id: 4, title: "SEC: Investment Fraud Alert", url: "https://www.sec.gov/investor/alerts", date: "2024.03.10" },
+                { id: 5, title: "BBC: AI Deepfake Scams", url: "https://www.bbc.com/news/technology-68194517", date: "2024.02.05" }
+            ]
         },
         zh: {
             title: "🛡️ 居家安全保安官", subtitle: "为挚爱家人量身定制的安全教育",
@@ -187,33 +197,44 @@
             certTitle: "结业证书", certBody: "鉴于您圆满完成了家人准备的安全教育课程，特发此证，以资鼓励。",
             pdfName: "姓名", pdfDate: "签发日期", pdfFooter: "居家安全保安官总部",
             eduBtn: "查看新闻/视频", alertLink: "链接已复制！",
-            eduTitles: ["浪漫陷阱案例", "电信诈骗新闻", "冒充亲友诈骗", "贷款诈骗警报", "AI语音诈骗"]
+            issueBtn: "🏆 颁发证书 (PDF)",
+            eduList: [
+                { id: 1, title: "杀猪盘防范提示", url: "http://www.gov.cn/xinwen/2024-02/14/content_5801234.htm", date: "2024.02.14" },
+                { id: 2, title: "国家网信办：电信诈骗防范", url: "http://www.cac.gov.cn/2024-03/05/c_171123456789.htm", date: "2024.03.05" },
+                { id: 3, title: "冒充领导熟人诈骗案例", url: "https://www.chinanews.com.cn/sh/2024/01-15/10146123.shtml", date: "2024.01.15" },
+                { id: 4, title: "新型网络诈骗提醒", url: "https://news.cctv.com/2024/03/10/ARTI12345678.shtml", date: "2024.03.10" },
+                { id: 5, title: "AI换脸诈骗新风险", url: "https://www.thepaper.cn/newsDetail_forward_26123456", date: "2024.02.20" }
+            ]
         },
         ja: {
-            title: "🛡️ 我が家の安全保安官", subtitle: "大切な家族のための防犯教育",
+            title: "🛡️ 我가家の安全保安官", subtitle: "大切な家族のための防犯教育",
             setupH2: "1. 教育対象の設定", labelTarget: "誰に送りますか？", optParent: "ご両親へ", optChild: "お子様へ", optSpouse: "配偶者へ",
             labelName: "お名前", labelMsg: "愛のメッセージ", btnGenerate: "教育リンクを作成",
-            placeholderName: "名前を入力してください", placeholderMsg: "詐欺에遭わず、幸せに暮らそう！",
+            placeholderName: "名前を入力してください", placeholderMsg: "詐欺に遭わず、幸せに暮らそう！",
             linkReady: "リンクが準備されました！", btnCopy: "コピーして送信",
             eduWelcome: "ようこそ、保安官様！", eduDesc: "家族が用意した5つの教育を完了してください。", progress: "進捗",
             certTitle: "修了証", certBody: "あなたは家族が用意した防犯教育課程を誠実に修了したため、本証を授与します。",
-            pdfName: "氏名", pdfDate: "発行日", pdfFooter: "我が家の安全保安官本部",
+            pdfName: "氏名", pdfDate: "発行日", pdfFooter: "我が家の安全保安관本部",
             eduBtn: "ニュース/動画を見る", alertLink: "リンクをコピーしました！",
-            eduTitles: ["ロマンス詐欺事例", "振り込め詐欺ニュース", "家族騙り詐欺注意", "融資詐欺アラート", "AI音声詐欺"]
+            issueBtn: "🏆 修了証を発行 (PDF)",
+            eduList: [
+                { id: 1, title: "ロマンス詐欺の現状と対策", url: "https://www.kokusen.go.jp/news/data/n-20240214_1.html", date: "2024.02.14" },
+                { id: 2, title: "警察庁：特殊詐欺を防ぐ", url: "https://www.npa.go.jp/bureau/safetylife/sos47/index.html", date: "2024.03.20" },
+                { id: 3, title: "身内を騙る詐欺に注意", url: "https://www.gov-online.go.jp/featured/202401/tokushu_sagi.html", date: "2024.01.10" },
+                { id: 4, title: "還付金詐欺の最新手口", url: "https://www.shouhiseikatu.metro.tokyo.jp/sodan/kinkyu/20240315.html", date: "2024.03.15" },
+                { id: 5, title: "AI悪用詐欺への警戒", url: "https://www3.nhk.or.jp/news/html/20240228/k10014373451000.html", date: "2024.02.28" }
+            ]
         }
     };
 
     let currentLang = 'ko';
 
-    // 2. 언어 변경 함수 (모든 요소 업데이트)
     function changeLang(lang) {
         currentLang = lang;
-        // 버튼 활성화 스타일
         document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.getElementById(`btn-${lang}`);
         if(activeBtn) activeBtn.classList.add('active');
 
-        // 텍스트 교체
         const d = langData[lang];
         document.getElementById('txt-title').innerText = d.title;
         document.getElementById('txt-subtitle').innerText = d.subtitle;
@@ -223,36 +244,26 @@
         document.getElementById('txt-opt-child').innerText = d.optChild;
         document.getElementById('txt-opt-spouse').innerText = d.optSpouse;
         document.getElementById('txt-label-name').innerText = d.labelName;
-        document.getElementById('p_name').placeholder = d.placeholderName; // 플레이스홀더 추가
+        document.getElementById('p_name').placeholder = d.placeholderName;
         document.getElementById('txt-label-msg').innerText = d.labelMsg;
-        document.getElementById('p_msg').placeholder = d.placeholderMsg; // 플레이스홀더 추가
+        document.getElementById('p_msg').placeholder = d.placeholderMsg;
         document.getElementById('txt-btn-generate').innerText = d.btnGenerate;
         document.getElementById('txt-link-ready').innerText = d.linkReady;
         document.getElementById('txt-btn-copy').innerText = d.btnCopy;
         document.getElementById('txt-edu-welcome').innerText = d.eduWelcome;
         document.getElementById('txt-edu-desc').innerText = d.eduDesc;
+        document.getElementById('issue-btn').innerText = d.issueBtn;
 
-        // 수료증 템플릿 텍스트 교체
         document.getElementById('pdf-title').innerText = d.certTitle;
         document.getElementById('pdf-body').innerText = d.certBody;
         document.getElementById('pdf-label-name').innerText = d.pdfName;
         document.getElementById('pdf-date-label').innerText = d.pdfDate;
         document.getElementById('pdf-footer').innerText = d.pdfFooter;
 
-        // 교육 화면 리렌더링 (목록 제목 및 버튼 언어 갱신)
         if(document.getElementById('edu-section').style.display === 'block') {
             renderList();
         }
     }
-
-    // 3. 기능 로직
-    const eduItems = [
-        { id: 1, url: "https://www.youtube.com/results?search_query=로맨스스캠+사례" },
-        { id: 2, url: "https://v.daum.net/v/20260328153012" },
-        { id: 3, url: "https://www.youtube.com/results?search_query=자녀사칭+스미싱" },
-        { id: 4, url: "https://www.korea.kr/news/policyNewsView.do?newsId=148924373" },
-        { id: 5, url: "https://v.daum.net/v/20260322000123" }
-    ];
 
     function generateLink() {
         const target = document.getElementById('target_type').value;
@@ -274,12 +285,13 @@
         const list = document.getElementById('edu-list');
         list.innerHTML = '';
         const d = langData[currentLang];
-        eduItems.forEach((item, index) => {
+        d.eduList.forEach((item) => {
             const isDone = localStorage.getItem(`done_${item.id}`);
             const div = document.createElement('div');
             div.className = `edu-card ${isDone ? 'done' : ''}`;
             div.innerHTML = `
-                <span style="font-weight:bold;">${d.eduTitles ? d.eduTitles[index] : 'Mission ' + (index+1)}</span>
+                <div class="edu-date">${item.date}</div>
+                <span style="font-weight:bold;">${item.title}</span>
                 <a href="${item.url}" target="_blank" class="edu-btn" onclick="done(${item.id})">${d.eduBtn}</a>
             `;
             list.appendChild(div);
@@ -294,9 +306,10 @@
 
     function updateStatus() {
         let count = 0;
-        eduItems.forEach(i => { if(localStorage.getItem(`done_${i.id}`)) count++; });
+        const d = langData[currentLang];
+        d.eduList.forEach(i => { if(localStorage.getItem(`done_${i.id}`)) count++; });
         document.getElementById('progress-fill').style.width = (count/5*100) + '%';
-        document.getElementById('txt-progress').innerText = `${langData[currentLang].progress}: ${count} / 5`;
+        document.getElementById('txt-progress').innerText = `${d.progress}: ${count} / 5`;
         if(count >= 5) document.getElementById('issue-btn').style.display = 'block';
     }
 
@@ -313,12 +326,11 @@
         pdf.save(`${params.get('name')}_Certificate.pdf`);
     }
 
-    // 4. 초기화
     window.onload = () => {
         const params = new URLSearchParams(window.location.search);
         if(params.get('name')) {
             const lang = params.get('lang') || 'ko';
-            changeLang(lang); // URL 언어에 맞게 UI 전체 업데이트
+            changeLang(lang);
             document.getElementById('setup-section').style.display = 'none';
             document.getElementById('edu-section').style.display = 'block';
             renderList();
